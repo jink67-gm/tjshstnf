@@ -8,7 +8,7 @@ service cloud.firestore {
       allow delete: if false;
       match /scores/{scoreId} {
         allow read: if true;
-        allow create, update: if request.resource.data.keys().hasOnly(['pid','name','round','scores','at'])
+        allow create, update: if request.resource.data.keys().hasOnly(['pid','name','round','scores','reasons','done','at'])
                               && request.resource.data.name is string
                               && request.resource.data.name.size() <= 20;
         allow delete: if false;
