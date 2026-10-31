@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서·논술형 평가 연습실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFAF2; --card:#FFFFFF; --navy:#20313D; --navy2:#12314A; --teal:#168C88; --tealL:#E7F4F3;
+  --orange:#EF8B4D; --orangeL:#FDEEE3; --line:#E4DCCF; --gray:#667782; --red:#D9534F; --green:#2E9E6A;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--navy);font-family:'Noto Sans KR',sans-serif;line-height:1.6}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+.brand{display:flex;flex-direction:column}
+.brand .bar{width:42px;height:4px;background:var(--orange);border-radius:2px;margin-bottom:8px}
+.brand h1{margin:0;font-size:22px;font-weight:800}
+.brand small{color:var(--gray)}
+.btn{border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:15px;background:var(--navy2);color:#fff}
+.btn.teal{background:var(--teal)} .btn.orange{background:var(--orange)}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:820px){.grid3{grid-template-columns:1fr}}
+.mode{cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:6px}
+.mode:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.06)}
+.tag{display:inline-block;align-self:flex-start;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--tealL);color:var(--teal)}
+.tag.o{background:var(--orangeL);color:var(--orange)}
+.mode h3{margin:6px 0 0;font-size:19px}
+.mode p{margin:0;color:var(--gray);font-size:14px}
+h2{font-size:20px;margin:0 0 12px}
+.muted{color:var(--gray);font-size:14px}
+.box{background:#FAF7F1;border:1px solid var(--line);border-radius:12px;padding:14px 16px;white-space:pre-wrap}
+.item{font-size:16px}
+label.chk{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;margin:6px 0;background:#fff;cursor:pointer;font-size:15px}
+label.chk input{margin-top:5px;transform:scale(1.15)}
+label.chk.ok{border-color:var(--green);background:#EAF7F0}
+label.chk.miss{border-color:var(--orange);background:var(--orangeL)}
+label.chk.wrong{border-color:var(--red);background:#FCECEC}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.space{justify-content:space-between}
+.progress{height:8px;background:#EEE6D9;border-radius:99px;overflow:hidden}
+.progress>div{height:100%;background:var(--teal)}
+textarea,input[type=text]{width:100%;font-family:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:12px;background:#fff;color:var(--navy)}
+textarea{min-height:90px;resize:vertical}
+mark.v{background:#FFD9C2;color:var(--navy);border-radius:4px;padding:0 2px}
+.flagline{margin-top:8px;font-size:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:820px){.two{grid-template-columns:1fr}}
+table.rb{width:100%;border-collapse:collapse;font-size:14px;background:#fff}
+table.rb th,table.rb td{border:1px solid var(--line);padding:8px 10px;vertical-align:top;text-align:left}
+table.rb th{background:var(--navy2);color:#fff;text-align:center}
+table.rb td.pt{text-align:center;font-weight:700;width:70px;white-space:nowrap}
+.ans{border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0;background:#fff}
+.ans .who{font-weight:700;color:var(--teal);margin-bottom:6px}
+.scorebtns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.scorebtns button{min-width:56px;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:15px;color:var(--navy)}
+.scorebtns button.sel{background:var(--teal);border-color:var(--teal);color:#fff}
+.hist{display:flex;gap:8px;align-items:flex-end;height:110px;margin-top:8px}
+.hist .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.hist .bar{width:100%;background:var(--teal);border-radius:6px 6px 0 0;min-height:2px}
+.hist .bar.gold{background:var(--orange)}
+.hist .lab{font-size:12px;color:var(--gray);margin-top:4px}
+.hist .num{font-size:13px;font-weight:700}
+.split{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:#FCECEC;color:var(--red)}
+.agree{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:#EAF7F0;color:var(--green)}
+.big{font-size:40px;font-weight:800;letter-spacing:6px;color:var(--teal)}
+.stat{font-size:28px;font-weight:800}
+.reveal{margin-top:10px;background:var(--orangeL);border-radius:10px;padding:10px 12px;font-size:14px}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy2);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:99}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:none;background:#fff;padding:7px 12px;font-weight:700;color:var(--navy)}
+.seg button.on{background:var(--navy2);color:#fff}
+.note{font-size:13px;color:var(--gray)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="bar"></div><h1>서·논술형 평가 연습실</h1><small>문항 검토 · 채점기준표 작성 · 채점 협의 연습</small></div>
+    <button class="btn ghost sm" id="homeBtn">처음으로</button>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script type="module">
+// =====================================================================
+// Firebase
+// =====================================================================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAJ-k0BBVZq-n9KQ8VaSiSGOAdYEJTecPo",
+  authDomain: "tjahstnf.firebaseapp.com",
+  projectId: "tjahstnf",
+  storageBucket: "tjahstnf.firebasestorage.app",
+  messagingSenderId: "326606815509",
+  appId: "1:326606815509:web:2c4c2df92901820909a91c",
+  measurementId: "G-BQ8Q0VG89F"
+};
+let db = null, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, serverTimestamp;
+let fbError = null;
+const fbReady = (async () => {
+  try {
+    const appMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    ({ doc, getDoc, setDoc, updateDoc, onSnapshot, collection, serverTimestamp } = fs);
+    db = fs.getFirestore(appMod.initializeApp(firebaseConfig));
+  } catch (e) { fbError = e; console.warn("Firebase 로딩 실패", e); }
+})();
+function needDb() {
+  if (db) return true;
+  $app.innerHTML = `<div class="card"><h2>실시간 채점 협의에 연결할 수 없습니다</h2><p class="muted">인터넷 연결 또는 Firebase 설정을 확인해 주세요. ‘문항 검토 클리닉’과 ‘기준 문장 다듬기’는 연결 없이도 사용할 수 있습니다.</p></div>`;
+  return false;
+}
+
+// =====================================================================
+// 데이터 1: 채점 협의 세트
+// =====================================================================
+const SETS = [
+  {
+    id: "labor",
+    title: "6학년 사회 · 근로자의 권리",
+    max: 3, points: [3, 2, 1, 0],
+    context: "(가) 아르바이트 부당 대우 사례\n· A 사례: 패밀리레스토랑에서 일하는 김○○(19세)은 손님이 없거나 한가한 날은 출근하지 말라고 하거나, 바쁜 날에는 퇴근 시간 이후에도 계속 일을 하라고 했다.\n· B 사례: 편의점 아르바이트 면접에서 이□□(19세)은 “성인이 아니니 더 낮은 시급으로 일해야 한다”는 말을 들었다.\n· C 사례: 음식점 주방에서 일하던 박△△(32세)은 집에서 쉬고 있는데 갑자기 내일부터 출근하지 말라는 연락을 받았다.\n\n(나) 법으로 보장된 근로조건\n· 근로 시간: 휴식 시간을 제외하고 원칙적으로 1일 8시간, 1주 40시간을 넘을 수 없다.\n· 휴식 시간: 4시간이면 30분 이상, 8시간이면 1시간 이상을 일하는 도중에 주어야 한다.\n· 해고: 해고하려면 적어도 30일 전에 알려야 하며, 정당한 이유 없이 해고할 수 없다.\n· 임금: 매달 1회 이상 일정한 날짜에 직접 지급하고, 반드시 최저 임금 이상을 주어야 한다.",
+    question: "(가)의 A~C 사례에서 근로자 권리가 침해된 부분을 찾고, (나)를 활용하여 그것이 근로자의 권리 침해인 이유를 설명하시오. (3점)\n<조건> 근로자 권리가 침해된 부분을 쓸 때, (가)의 내용을 그대로 쓰지 않아야 함",
+    rubric: {
+      v1: [
+        [3, "근로자의 권리 침해를 잘 설명한 경우"],
+        [2, "근로자의 권리 침해를 대체로 설명한 경우"],
+        [1, "설명이 다소 미흡한 경우"],
+        [0, "무응답"]
+      ],
+      v2: [
+        [3, "(가)에서 권리 침해 부분을 3개 모두 정확하게 찾고, 각각이 권리 침해인 이유를 (나)의 권리와 연결하여 모두 바르게 서술한 경우"],
+        [2, "권리 침해 부분을 2개만 정확하게 찾고, 그 이유를 (나)의 권리와 연결하여 바르게 서술한 경우"],
+        [1, "권리 침해 부분을 1개만 정확하게 찾고, 그 이유를 (나)의 권리와 연결하여 바르게 서술한 경우"],
+        [0, "무응답 또는 (가)의 표현을 그대로 옮겨 쓴 경우(<조건> 미준수)"]
+      ]
+    },
+    answers: [
+      { text: "A 사례는 근로 시간을 가게 사정에 따라 마음대로 줄이거나 늘렸으므로 1일 8시간 원칙에 어긋난다. B 사례는 성인이 아니어도 최저 임금 이상을 받아야 하므로 권리 침해이다. C 사례는 30일 전에 알리지 않고 정당한 이유 없이 해고했으므로 권리 침해이다.", gold: 3, why: "세 사례 모두 침해 부분을 찾고 (나)의 근로 시간·임금·해고 조건과 연결하였다." },
+      { text: "A는 손님이 없거나 한가한 날은 출근하지 말라고 하고, 바쁜 날에는 퇴근 시간 이후에도 일을 하라고 했다. B는 성인이 아니니 더 낮은 시급으로 일하라고 했다. C는 갑자기 내일부터 출근하지 말라고 했다.", gold: 0, why: "(가)의 문장을 거의 그대로 옮겨 썼고 (나)와 연결한 이유가 없다. <조건> 미준수로 0점이다. ‘사례는 다 찾았으니 부분 점수’로 판단하기 쉬운 답안이다." },
+      { text: "A 사례: 하루 8시간, 1주 40시간이 정해져 있는데 마음대로 바꿨으니 권리 침해이다. B 사례: 최저 임금보다 적게 주면 안 된다. C 사례: 갑자기 해고해서 나쁘다.", gold: 2, why: "A·B는 (나)와 연결하였으나, C는 ‘나쁘다’에 그쳐 30일 전 통보·정당한 이유와 연결되지 않았다. C를 인정할지에서 의견이 갈리기 쉽다." },
+      { text: "A는 일을 너무 많이 시켜서 문제이다. B는 미성년자도 최저 임금을 받아야 하는데 적게 주었다. C는 해고는 함부로 하면 안 된다.", gold: 1, why: "B만 (나)의 임금 조건과 분명하게 연결하였다. A는 근로 시간 조건, C는 30일 전 통보 등과의 연결이 드러나지 않는다." },
+      { text: "B 사례에서 최저 임금보다 적게 주는 것은 법을 어긴 것이다. A 사례는 바쁜 날 퇴근 시간 이후에도 일을 시켜서 하루 8시간이 넘었을 수 있으므로 근로 시간 권리를 침해했다.", gold: 2, why: "두 사례를 (나)와 연결하였고 C는 쓰지 않았다. A의 ‘넘었을 수 있으므로’를 인정할지에서 의견이 갈릴 수 있다." }
+    ]
+  },
+  {
+    id: "democracy",
+    title: "6학년 사회 · 민주주의와 시민 참여",
+    max: 4, points: [4, 2, 1, 0],
+    context: "(가) 1960년 4·19 혁명: 학생과 시민들이 부정 선거에 항의하는 시위를 벌였고, 그 결과 대통령이 물러나고 새 정부가 들어섰다.\n(나) 1987년 6월 민주 항쟁: 시민들이 대통령을 국민이 직접 뽑는 직선제를 요구하였고, 그 결과 6·29 민주화 선언이 발표되어 대통령 직선제로 헌법이 바뀌었다.",
+    question: "자료를 읽고, 민주주의 발전에 시민 참여가 중요했던 이유를 두 가지 근거로 설명하시오. (4점)",
+    rubric: {
+      v1: [
+        [4, "자료를 바탕으로 시민 참여가 민주주의 발전에 중요했던 이유를 논리적으로 서술한 경우"],
+        [2, "시민 참여가 중요했던 이유를 서술하였으나, 근거 제시나 설명이 다소 미흡한 경우"],
+        [1, "시민 참여가 중요했던 이유를 단편적으로 서술한 경우"],
+        [0, "무응답 또는 문항과 관련 없는 내용을 서술한 경우"]
+      ],
+      v2: [
+        [4, "자료에서 근거 2가지를 모두 찾고, 민주주의 발전에 시민 참여가 중요했던 이유와 바르게 연결하여 서술한 경우"],
+        [2, "· 자료에서 근거 1가지만 찾아 시민 참여가 중요했던 이유와 연결하여 서술한 경우\n· 자료에서 근거 2가지를 찾았으나, 중요했던 이유와의 연결 설명이 부족한 경우"],
+        [1, "자료에서 근거만 찾아 나열했거나, 자료의 근거 없이 시민 참여가 중요했던 이유만 쓴 경우"],
+        [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]
+      ]
+    },
+    answers: [
+      { text: "4·19 혁명 때 시민들이 부정 선거에 항의해서 대통령이 물러났고, 6월 민주 항쟁 때 시민들이 직선제를 요구해서 국민이 대통령을 직접 뽑게 되었다. 이처럼 시민이 참여해야 잘못된 정치를 바로잡고 국민의 뜻이 반영되므로 시민 참여가 중요하다.", gold: 4, why: "근거 2가지를 모두 찾고 ‘잘못된 정치를 바로잡음, 국민의 뜻 반영’이라는 이유와 연결하였다." },
+      { text: "4·19 혁명, 6월 민주 항쟁", gold: 1, why: "근거만 나열하였다." },
+      { text: "시민들이 참여하지 않으면 나라가 독재가 될 수 있기 때문에 시민 참여는 중요하다. 나라의 주인은 국민이기 때문이다.", gold: 1, why: "이유는 썼으나 자료의 근거가 없다. 내용이 그럴듯해서 2점 이상을 주기 쉬운 답안이다." },
+      { text: "4·19 혁명 때 시민들이 시위를 해서 부정 선거를 한 대통령이 물러났다. 그래서 시민 참여가 중요하다. 6월 민주 항쟁도 있었다.", gold: 2, why: "근거 1가지(4·19 혁명)는 이유와 연결하였고, 6월 민주 항쟁은 나열에 그쳤다." },
+      { text: "4·19 혁명과 6월 민주 항쟁에서 시민들이 나섰기 때문에 민주주의가 발전했다.", gold: 2, why: "근거 2가지를 찾았으나 ‘왜 중요한지’의 연결 설명이 부족하다. 1점과 2점 사이에서 의견이 갈리기 쉽다." }
+    ]
+  },
+  {
+    id: "industry",
+    title: "사회 · 산업화와 생활 모습의 변화",
+    max: 5, points: [5, 3, 1, 0],
+    context: "· 그래프 1 ‘시기별 한국 공업 구조의 변화’: 1960년대에서 2000년대로 갈수록 경공업 비중은 줄고 중화학 공업 비중은 커진다.\n· 그래프 2 ‘우리나라의 연도별 수출액’: 수출액이 시간이 지날수록 크게 늘어난다.",
+    question: "그래프를 보고, 산업화로 인해 달라진 우리나라 사람들의 생활 모습 변화를 <조건>에 맞게 서술하시오.\n<조건> · 공업 구조와 수출액의 변화와 연관 지어 서술할 것\n· ‘국민 소득’, ‘생활 수준’이라는 단어를 모두 포함할 것\n· 공업 구조와 수출액이 변했다는 내용을 그대로 쓰지 말 것",
+    rubric: {
+      v1: [
+        [5, "그래프를 바탕으로 생활 모습의 변화를 충실하게 서술한 경우"],
+        [3, "생활 모습의 변화를 대체로 서술한 경우"],
+        [1, "서술이 미흡한 경우"],
+        [0, "무응답"]
+      ],
+      v2: [
+        [5, "중화학 공업 비중의 증가와 수출액 증가로 인해 국민 소득이 높아져 생활 수준이 향상되었음을 모두 포함하여 서술한 경우"],
+        [3, "· 중화학 공업 비중의 증가와 수출액 증가 중 1가지만 근거로 들고, 국민 소득이 높아져 생활 수준이 향상되었음을 서술한 경우\n· 공업 구조의 변화와 수출액 증가를 모두 서술했으나, 국민 소득 향상과 생활 수준 향상 중 1가지만 서술한 경우"],
+        [1, "중화학 공업 비중의 증가와 수출액 증가 중 1가지만 근거로 들고, 국민 소득 향상과 생활 수준 향상 중 1가지만 서술한 경우"],
+        [0, "무응답, 문항과 무관한 내용을 서술한 경우"]
+      ]
+    },
+    answers: [
+      { text: "중화학 공업의 비중이 커지고 수출액이 크게 늘어나면서 국민 소득이 높아졌고, 사람들의 생활 수준도 향상되었다.", gold: 5, why: "근거 2가지와 결과 2가지를 모두 연결하였다." },
+      { text: "수출액이 많이 늘어나서 국민 소득이 늘고 생활 수준이 좋아졌다.", gold: 3, why: "근거 1가지(수출액)와 결과 2가지를 연결하였다." },
+      { text: "중화학 공업이 발달하고 수출이 늘어나 국민 소득이 증가하였다.", gold: 3, why: "근거 2가지, 결과 1가지(국민 소득)이다. ‘생활 수준’ 단어가 빠져 <조건> 위반으로 볼지에서 의견이 갈릴 수 있다." },
+      { text: "중화학 공업이 늘어서 사람들의 생활이 편해졌다.", gold: 1, why: "근거 1가지, 결과도 ‘생활이 편해졌다’ 정도이다. 지정 단어를 쓰지 않아 0점으로 볼지 논의가 필요하다." },
+      { text: "공업 구조와 수출액이 변했다.", gold: 0, why: "그래프의 변화를 그대로 썼고, 국민 소득·생활 수준과의 연결이 없다." }
+    ]
+  }
+];
+
+// =====================================================================
+// 데이터 2: 문항 검토 클리닉
+// =====================================================================
+const TYPES = {
+  T1: "단순 기억·요약 수준의 사고만 요구함",
+  T2: "학생이 해야 할 과업과 답안 요소가 분명하지 않음",
+  T3: "논쟁적 주제에서 입장 자체를 평가하게 됨",
+  T4: "응답할 가지 수가 한정되지 않음(‘~이상’)",
+  T5: "질문이 길고 복잡함",
+  T6: "불필요한 내용이 들어가 답이 드러남",
+  T7: "질문에 정답의 단서가 포함됨",
+  T8: "부정문을 사용함",
+  T9: "발문의 범위가 넓어 의도와 다른 답이 가능함",
+  T10: "학생 수준에 맞지 않는 어휘를 사용함"
+};
+const CLINIC = [
+  { item: "(문) 다음의 대통령 연설 내용을 요약하시오.", ans: ["T1"],
+    why: "연설 내용을 요약하는 데 그쳐 학생의 분석·판단 과정을 확인할 수 없습니다.",
+    fix: "(문) 다음의 대통령 연설 중 경제 정책 부분에서 사실적 진술문과 의견을 나타내는 진술문을 구분하시오. 두 진술문을 따로 목록화한 후에, 각 진술문이 대통령의 전반적인 경제 정책과 일치하는 것과 일치하지 않는 것을 지적하시오." },
+  { item: "(문) 6.25 전쟁 발발에 중요한 영향을 미친 세력은 무엇인가?", ans: ["T2"],
+    why: "무엇을 어떤 요소를 포함하여 써야 하는지 드러나지 않아 답안이 제각각이 되고 채점 요소도 정하기 어렵습니다.",
+    fix: "(문) 6.25 전쟁이 발생할 때 북한과 남한의 입장을 비교 및 대비하시오. 답안에서 경제적 상황, 대외정책, 정치적 상황, 사회적 여건을 포함하여 쓰시오." },
+  { item: "(문) 교실 내 CCTV 설치가 필요한 이유 3가지를 타당한 근거와 함께 제시하시오.", ans: ["T3"],
+    why: "찬성 입장만 쓰게 하여 입장 자체를 평가하게 됩니다. 논쟁적 주제는 입장이 아니라 근거의 타당성으로 평가해야 합니다.",
+    fix: "(문) 교실 내 CCTV 설치가 필요하다고 생각하는 사람들이 있습니다. 이에 동의 혹은 부동의 입장을 밝히고, 선택한 입장에 대한 이유 3가지를 타당한 근거와 함께 제시하시오." },
+  { item: "(문) 국가유산을 답사의 방법으로 조사했을 때의 장점을 2가지 이상 제시하시오.", ans: ["T4"],
+    why: "정해진 가지 수보다 많이 쓰면서 틀린 내용을 섞은 답안을 어떻게 채점할지 문제가 생깁니다.",
+    fix: "(문) 국가유산을 답사의 방법으로 조사했을 때의 장점을 2가지(만) 제시하시오." },
+  { item: "(문) “어린이는 나라의 보배입니다. 어른들은 미래의 희망이요, 주인공이 될 우리 어린이들을 사랑하고 존경합시다.”라고 말한 사람은 누구입니까?", ans: ["T5"],
+    why: "질문 안에 긴 인용문이 들어가 있어 질문을 이해하는 데 시간이 많이 걸립니다.",
+    fix: "(문) <보기>에서 설명하는 사람은 누구입니까?\n<보기> “어린이는 나라의 보배입니다. 어른들은 미래의 희망이요, 주인공이 될 우리 어린이들을 사랑하고 존경합시다.”" },
+  { item: "(문) 다음 <보기>에서와 같이 “도로에서 일어나는 교통상의 모든 위험과 장해를 방지하고 제거하여 안전하고 원활한 교통을 확보함을 목적으로 하는 대한민국의 법”을 무엇이라고 하는가?\n<보기> 지난 일요일 아침에 할머니 집에 갔습니다. 집 앞 횡단보도에서 보행 신호를 지키면서 안전하게 길을 건넜습니다.", ans: ["T6"],
+    why: "질문 속 법의 정의만 읽어도 ‘도로교통법’을 고를 수 있어 <보기>를 읽을 필요가 없습니다.",
+    fix: "(문) 다음 <보기>에서 적용된 법은 무엇일까요?" },
+  { item: "(문) 생태계를 이루는 요소 중 물, 햇빛과 같은 비생물 요소에 해당하는 것은 어느 것입니까?", ans: ["T7"],
+    why: "‘물, 햇빛과 같은’이 정답의 단서가 되어 개념을 이해하지 못해도 답을 고를 수 있습니다.",
+    fix: "(문) 생태계를 이루는 요소 중 비생물 요소에 해당하는 것은 어느 것입니까?" },
+  { item: "(문) 쓰기에서 중심 소재는 중요하지 않은 소재가 아니다. (O, X)", ans: ["T8"],
+    why: "부정문과 이중 부정은 학생이 부주의로 잘못 파악하기 쉽습니다.",
+    fix: "(문) 쓰기에서 중심 소재는 중요한 소재를 말한다. (O, X)" },
+  { item: "[성취기준: 국가기관이 권력을 나누어 맡는 이유를 탐색한다]\n(문) 글을 읽고, 이 나라에서 나타날 수 있는 문제를 한 가지 쓰시오.\n(글: 한 기관이 법을 만들고, 법에 따라 나라 일을 처리하고, 재판까지 맡는 나라. 최근 인터넷 이용 시간을 제한하는 법을 만들었다.)", ans: ["T9"],
+    why: "발문의 범위가 넓어 ‘인터넷 이용 제한에 따른 불편’처럼 성취기준과 다른 방향의 답이 나올 수 있습니다.",
+    fix: "(문) 글을 읽고, 하나의 국가기관이 여러 권한을 모두 맡을 때 발생할 수 있는 문제점을 한 가지 쓰시오." },
+  { item: "(문) <보기>와 같은 형식으로 동등이의어 ‘탔다’가 들어간 짧은 문장 세 개를 쓰시오. 단, 각 문장은 반드시 ‘(누가) (무엇을) 탔다’ 형식으로 써야 하며, <보기>의 ‘탔다’와 동등이의어의 관계에 있어야 한다.\n<보기> 나는 자동차를 탔다.", ans: ["T10", "T5"],
+    why: "‘동등이의어’ 같은 용어는 초등학생에게 어렵고, 지시문도 길고 복잡합니다. 어휘 이해력이 함께 측정되어 평가하려는 능력이 정확히 드러나지 않습니다.",
+    fix: "(문) <보기>의 ‘탔다’와 뜻이 다른 ‘탔다’가 들어간 짧은 문장 세 개를 쓰시오.\n<보기> 나는 자동차를 탔다." }
+];
+
+// =====================================================================
+// 데이터 3: 기준 문장 다듬기
+// =====================================================================
+const VAGUE = ["타당", "적절", "논리적", "충실", "성실", "우수", "미흡", "다소", "단편적", "대체로", "충분", "꼼꼼", "적극적", "바르게 잘", "잘 ", "훌륭", "체계적", "자세히", "풍부"];
+const POLISH = [
+  { ctx: "근로자의 권리 문항(사례 3개, (나) 근로조건 활용)", vague: "근거가 타당하고 논리적임",
+    model: "제시된 (나) 자료에서 알맞은 근거를 찾아 자신의 판단과 연결하여 서술함" },
+  { ctx: "근로자의 권리 문항", vague: "개념을 잘 이해하여 성실하게 작성함",
+    model: "권리 침해 사례와 법으로 보장된 권리를 바르게 짝지어 이유를 설명함" },
+  { ctx: "민주주의 발전과 시민 참여 문항(근거 2가지 요구), 4점 기준", vague: "자료를 바탕으로 시민 참여가 중요했던 이유를 논리적으로 서술한 경우",
+    model: "자료에서 근거 2가지를 모두 찾고, 민주주의 발전에 시민 참여가 중요했던 이유와 바르게 연결하여 서술한 경우" },
+  { ctx: "민주주의 발전과 시민 참여 문항, 2점 기준", vague: "근거 제시나 설명이 다소 미흡한 경우",
+    model: "자료에서 근거 1가지만 찾아 이유와 연결하여 서술했거나, 근거 2가지를 찾았으나 이유와의 연결 설명이 부족한 경우" },
+  { ctx: "민주주의 발전과 시민 참여 문항, 1점 기준", vague: "이유를 단편적으로 서술한 경우",
+    model: "자료에서 근거만 찾아 나열했거나, 자료의 근거 없이 시민 참여가 중요했던 이유만 쓴 경우" },
+  { ctx: "주장하는 글쓰기 문항", vague: "충실하게 썼다 / 논리적으로 설명했다",
+    model: "근거 2가지를 제시하고, 주장과 연결하여 설명했다" },
+  { ctx: "근거를 들어 판단하는 문항의 형식 기준", vague: "글씨가 바르고 작성 분량이 충분함",
+    model: "<조건>(제시문의 문장을 그대로 옮겨 쓰지 않음)을 지켜 자신의 말로 풀어서 서술함",
+    tip: "글씨·분량은 판단력과 관련이 없습니다. 형식 기준은 문항의 <조건>을 지켰는지로 바꿉니다." },
+  { ctx: "산업화와 생활 모습 변화 문항(그래프 2개), 5점 기준", vague: "그래프를 적절히 해석하여 생활 변화를 잘 서술함",
+    model: "중화학 공업 비중의 증가와 수출액 증가로 인해 국민 소득이 높아져 생활 수준이 향상되었음을 모두 포함하여 서술한 경우" }
+];
+
+// =====================================================================
+// 공통
+// =====================================================================
+const $app = document.getElementById("app");
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const nl = (s) => esc(s).replace(/\n/g, "<br>");
+let unsubs = [];
+function cleanup() { unsubs.forEach((u) => u()); unsubs = []; }
+function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2200); }
+function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+function myId() { let id = store("sl_pid"); if (!id) { id = "p" + Math.random().toString(36).slice(2, 10); store("sl_pid", id); } return id; }
+const setById = (id) => SETS.find((s) => s.id === id);
+function rubricTable(set, ver) {
+  return `<table class="rb"><tr><th>배점</th><th>채점 기준</th></tr>${set.rubric[ver].map(([p, t]) => `<tr><td class="pt">${p}점</td><td>${nl(t)}</td></tr>`).join("")}</table>`;
+}
+document.getElementById("homeBtn").onclick = () => { location.hash = ""; route(); };
+window.addEventListener("hashchange", route);
+
+// =====================================================================
+// 홈
+// =====================================================================
+function home() {
+  $app.innerHTML = `
+  <div class="grid3">
+    <div class="card mode" data-go="room"><span class="tag o">연수용 · 실시간</span><h3>같은 답안, 같은 점수?</h3>
+      <p>같은 학생 답안을 함께 채점하고, 점수가 갈린 답안을 찾아 채점기준을 다듬습니다.</p></div>
+    <div class="card mode" data-go="clinic"><span class="tag">개인 연습</span><h3>문항 검토 클리닉</h3>
+      <p>문제가 숨어 있는 문항을 보고 무엇을 고쳐야 하는지 진단합니다.</p></div>
+    <div class="card mode" data-go="polish"><span class="tag">개인 연습</span><h3>기준 문장 다듬기</h3>
+      <p>모호한 채점기준을 답안에서 확인할 수 있는 문장으로 바꿉니다.</p></div>
+  </div>
+  <div class="card"><h2>이렇게 활용합니다</h2>
+    <div class="muted">· 연수 중: 진행자가 ‘같은 답안, 같은 점수?’에서 방을 만들고, 참여자는 방 번호로 들어와 함께 채점합니다.<br>
+    · 1차 채점은 모호한 기준표로, 협의 후 2차 채점은 구체적인 기준표로 진행하면 채점 일치도의 변화를 확인할 수 있습니다.<br>
+    · 연수 전후: ‘문항 검토 클리닉’과 ‘기준 문장 다듬기’로 혼자 반복 연습합니다.</div></div>`;
+  $app.querySelectorAll("[data-go]").forEach((el) => (el.onclick = () => { location.hash = el.dataset.go; }));
+}
+
+// =====================================================================
+// 모드 1: 실시간 채점 협의
+// =====================================================================
+function roomEntry() {
+  $app.innerHTML = `
+  <div class="two">
+    <div class="card"><span class="tag o">진행자</span><h2 style="margin-top:8px">방 만들기</h2>
+      <p class="muted">채점할 문항 세트를 고르면 방 번호가 만들어집니다.</p>
+      ${SETS.map((s) => `<label class="chk"><input type="radio" name="set" value="${s.id}" ${s.id === "labor" ? "checked" : ""}><span><b>${esc(s.title)}</b><br><span class="note">학생 답안 ${s.answers.length}개 · ${s.max}점 만점</span></span></label>`).join("")}
+      <div class="row" style="margin-top:12px"><button class="btn orange" id="create">방 만들기</button></div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:18px 0">
+      <p class="muted" style="margin:0 0 6px">이미 만든 방의 진행자 화면 다시 열기</p>
+      <div class="row"><input type="text" id="hostCode" placeholder="방 번호 4자리" maxlength="4" style="max-width:160px"><button class="btn ghost" id="reopen">열기</button></div>
+    </div>
+    <div class="card"><span class="tag">참여자</span><h2 style="margin-top:8px">방 들어가기</h2>
+      <p class="muted">진행자가 안내한 방 번호와 이름을 입력합니다.</p>
+      <input type="text" id="code" placeholder="방 번호 4자리" maxlength="4" inputmode="numeric" style="margin-bottom:10px">
+      <input type="text" id="name" placeholder="이름(예: 김○○ 선생님)" maxlength="20" value="${esc(store("sl_name") || "")}">
+      <div class="row" style="margin-top:12px"><button class="btn teal" id="join">입장하기</button></div>
+    </div>
+  </div>`;
+  document.getElementById("create").onclick = createRoom;
+  document.getElementById("reopen").onclick = async () => {
+    const c = document.getElementById("hostCode").value.trim();
+    if (!/^\d{4}$/.test(c)) return toast("방 번호 4자리를 입력해 주세요.");
+    const s = await getDoc(doc(db, "rooms", c)); if (!s.exists()) return toast("해당 방이 없습니다.");
+    location.hash = "host/" + c;
+  };
+  document.getElementById("join").onclick = async () => {
+    const c = document.getElementById("code").value.trim(); const n = document.getElementById("name").value.trim();
+    if (!/^\d{4}$/.test(c)) return toast("방 번호 4자리를 입력해 주세요.");
+    if (!n) return toast("이름을 입력해 주세요.");
+    try { const s = await getDoc(doc(db, "rooms", c)); if (!s.exists()) return toast("해당 방이 없습니다."); }
+    catch (e) { console.error(e); return toast("연결에 실패했습니다. Firestore 설정을 확인해 주세요."); }
+    store("sl_name", n); location.hash = "play/" + c;
+  };
+}
+async function createRoom() {
+  const setId = document.querySelector('input[name=set]:checked').value;
+  try {
+    let code;
+    for (let i = 0; i < 20; i++) { code = String(Math.floor(1000 + Math.random() * 9000)); const s = await getDoc(doc(db, "rooms", code)); if (!s.exists()) break; }
+    await setDoc(doc(db, "rooms", code), { setId, round: 1, rubric: "v1", revealed: false, createdAt: serverTimestamp() });
+    location.hash = "host/" + code;
+  } catch (e) { console.error(e); toast("방을 만들지 못했습니다. Firestore 설정을 확인해 주세요."); }
+}
+
+// ---------- 진행자 화면 ----------
+function hostView(code) {
+  $app.innerHTML = `<div class="card">불러오는 중…</div>`;
+  let room = null, scores = [];
+  const render = () => {
+    if (!room) return;
+    const set = setById(room.setId);
+    const cur = scores.filter((s) => s.round === room.round);
+    const people = cur.length;
+    const stats = set.answers.map((a, i) => {
+      const counts = Object.fromEntries(set.points.map((p) => [p, 0]));
+      let n = 0;
+      cur.forEach((s) => { const v = s.scores && s.scores[i]; if (v !== undefined && v !== null) { counts[v] = (counts[v] || 0) + 1; n++; } });
+      const top = Math.max(0, ...Object.values(counts));
+      return { counts, n, agree: n ? top / n : 0 };
+    });
+    const agreeAvg = (r) => {
+      const rs = scores.filter((s) => s.round === r); if (!rs.length) return null;
+      let sum = 0, k = 0;
+      set.answers.forEach((a, i) => { const c = {}; let n = 0; rs.forEach((s) => { const v = s.scores && s.scores[i]; if (v !== undefined && v !== null) { c[v] = (c[v] || 0) + 1; n++; } }); if (n) { sum += Math.max(...Object.values(c)) / n; k++; } });
+      return k ? Math.round((sum / k) * 100) : null;
+    };
+    const a1 = agreeAvg(1), a2 = agreeAvg(2);
+    $app.innerHTML = `
+    <div class="card"><div class="row space">
+      <div><span class="tag o">진행자 화면</span><h2 style="margin:8px 0 0">${esc(set.title)}</h2></div>
+      <div style="text-align:right"><div class="muted">방 번호</div><div class="big">${code}</div></div></div>
+      <div class="row" style="margin-top:12px;gap:18px">
+        <div><div class="muted">현재 라운드</div><div class="stat">${room.round}차 채점</div></div>
+        <div><div class="muted">참여 인원</div><div class="stat">${people}명</div></div>
+        <div><div class="muted">1차 일치도</div><div class="stat">${a1 === null ? "-" : a1 + "%"}</div></div>
+        <div><div class="muted">2차 일치도</div><div class="stat">${a2 === null ? "-" : a2 + "%"}</div></div>
+      </div>
+      <p class="note" style="margin:8px 0 0">일치도: 답안마다 가장 많이 나온 점수를 준 사람의 비율을 구해 평균한 값입니다.</p>
+    </div>
+    <div class="card"><div class="row space"><h2 style="margin:0">진행 조정</h2></div>
+      <div class="row" style="margin-top:10px">
+        <span class="muted">참여자에게 보이는 채점기준표</span>
+        <div class="seg"><button data-rb="v1" class="${room.rubric === "v1" ? "on" : ""}">모호한 기준</button><button data-rb="v2" class="${room.rubric === "v2" ? "on" : ""}">구체적인 기준</button></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ${room.revealed ? "ghost" : "orange"}" id="reveal">${room.revealed ? "기준 점수 숨기기" : "기준 점수·해설 공개"}</button>
+        ${room.round === 1 ? `<button class="btn teal" id="round2">2차 채점 시작(구체적인 기준)</button>` : `<button class="btn ghost" id="round1">1차 결과 보기로 돌아가기</button>`}
+      </div>
+      <p class="note" style="margin:10px 0 0">권장 순서: 모호한 기준으로 1차 채점 → 점수가 갈린 답안 협의 → 2차 채점 시작 → 기준 점수·해설 공개</p>
+    </div>
+    <div class="card"><h2>답안별 점수 분포 (${room.round}차)</h2>
+      ${set.answers.map((a, i) => {
+        const st = stats[i]; const max = Math.max(1, ...Object.values(st.counts));
+        const badge = st.n < 2 ? "" : st.agree < 0.7 ? `<span class="split">의견이 갈림</span>` : `<span class="agree">대체로 일치</span>`;
+        return `<div class="ans"><div class="row space"><div class="who">학생 답안 ${i + 1}</div><div class="row">${badge}<span class="note">응답 ${st.n}명</span></div></div>
+          <div>${nl(a.text)}</div>
+          <div class="hist">${set.points.map((p) => `<div class="col"><div class="num">${st.counts[p] || 0}</div><div class="bar ${room.revealed && p === a.gold ? "gold" : ""}" style="height:${((st.counts[p] || 0) / max) * 80}%"></div><div class="lab">${p}점</div></div>`).join("")}</div>
+          ${room.revealed ? `<div class="reveal"><b>기준 점수 ${a.gold}점</b> · ${esc(a.why)}</div>` : ""}</div>`;
+      }).join("")}
+    </div>
+    <div class="card"><h2>문항과 채점기준표</h2><div class="box item">${nl(set.question)}</div>
+      <div class="box" style="margin-top:10px;font-size:14px">${nl(set.context)}</div>
+      <div class="two" style="margin-top:12px"><div><p class="muted" style="margin:0 0 6px">모호한 기준</p>${rubricTable(set, "v1")}</div><div><p class="muted" style="margin:0 0 6px">구체적인 기준</p>${rubricTable(set, "v2")}</div></div>
+    </div>`;
+    $app.querySelectorAll("[data-rb]").forEach((b) => (b.onclick = () => updateDoc(doc(db, "rooms", code), { rubric: b.dataset.rb })));
+    document.getElementById("reveal").onclick = () => updateDoc(doc(db, "rooms", code), { revealed: !room.revealed });
+    const r2 = document.getElementById("round2"); if (r2) r2.onclick = () => { if (confirmBox("2차 채점을 시작할까요? 참여자 화면이 구체적인 기준표로 바뀌고 점수 입력이 새로 시작됩니다.")) updateDoc(doc(db, "rooms", code), { round: 2, rubric: "v2", revealed: false }); };
+    const r1 = document.getElementById("round1"); if (r1) r1.onclick = () => updateDoc(doc(db, "rooms", code), { round: 1, rubric: "v1" });
+  };
+  unsubs.push(onSnapshot(doc(db, "rooms", code), (s) => { if (!s.exists()) { $app.innerHTML = `<div class="card">방을 찾을 수 없습니다.</div>`; return; } room = s.data(); render(); }, (e) => { console.error(e); toast("연결 오류: Firestore 설정을 확인해 주세요."); }));
+  unsubs.push(onSnapshot(collection(db, "rooms", code, "scores"), (qs) => { scores = qs.docs.map((d) => d.data()); render(); }));
+}
+function confirmBox(msg) { return window.confirm(msg); }
+
+// ---------- 참여자 화면 ----------
+function playView(code) {
+  const pid = myId(); const name = store("sl_name") || "참여자";
+  $app.innerHTML = `<div class="card">불러오는 중…</div>`;
+  let room = null, mine = {};
+  const render = () => {
+    if (!room) return;
+    const set = setById(room.setId);
+    const done = set.answers.filter((a, i) => mine[i] !== undefined).length;
+    $app.innerHTML = `
+    <div class="card"><div class="row space"><div><span class="tag">참여자 · ${esc(name)}</span><h2 style="margin:8px 0 0">${esc(set.title)}</h2></div>
+      <div style="text-align:right"><div class="muted">${room.round}차 채점</div><div class="stat">${done}/${set.answers.length}</div></div></div>
+      <div class="progress" style="margin-top:10px"><div style="width:${(done / set.answers.length) * 100}%"></div></div>
+      <p class="note" style="margin:8px 0 0">채점기준표만 보고 점수를 고르세요. 누른 점수는 바로 저장되며 언제든 바꿀 수 있습니다.</p></div>
+    <div class="card"><h2>문항</h2><div class="box item">${nl(set.question)}</div>
+      <details style="margin-top:10px"><summary class="muted" style="cursor:pointer">제시 자료 보기</summary><div class="box" style="margin-top:8px;font-size:14px">${nl(set.context)}</div></details></div>
+    <div class="card"><h2>채점기준표 <span class="tag ${room.rubric === "v1" ? "o" : ""}">${room.rubric === "v1" ? "1차" : "수정본"}</span></h2>${rubricTable(set, room.rubric)}</div>
+    <div class="card"><h2>학생 답안 채점</h2>
+      ${set.answers.map((a, i) => `<div class="ans"><div class="who">학생 답안 ${i + 1}</div><div>${nl(a.text)}</div>
+        <div class="scorebtns">${set.points.map((p) => `<button data-i="${i}" data-p="${p}" class="${mine[i] === p ? "sel" : ""}">${p}점</button>`).join("")}</div>
+        ${room.revealed ? `<div class="reveal"><b>기준 점수 ${a.gold}점</b>${mine[i] !== undefined ? ` (내 점수 ${mine[i]}점)` : ""} · ${esc(a.why)}</div>` : ""}</div>`).join("")}
+    </div>`;
+    $app.querySelectorAll(".scorebtns button").forEach((b) => (b.onclick = async () => {
+      const i = +b.dataset.i, p = +b.dataset.p; mine[i] = p; render();
+      try { await setDoc(doc(db, "rooms", code, "scores", `${pid}_r${room.round}`), { pid, name, round: room.round, scores: mine, at: serverTimestamp() }, { merge: true }); }
+      catch (e) { console.error(e); toast("저장에 실패했습니다."); }
+    }));
+  };
+  let curRound = null;
+  unsubs.push(onSnapshot(doc(db, "rooms", code), async (s) => {
+    if (!s.exists()) { $app.innerHTML = `<div class="card">방을 찾을 수 없습니다.</div>`; return; }
+    room = s.data();
+    if (room.round !== curRound) {
+      curRound = room.round; mine = {};
+      const my = await getDoc(doc(db, "rooms", code, "scores", `${pid}_r${room.round}`));
+      if (my.exists()) { const sc = my.data().scores || {}; Object.keys(sc).forEach((k) => (mine[+k] = sc[k])); }
+    }
+    render();
+  }, (e) => { console.error(e); toast("연결 오류: Firestore 설정을 확인해 주세요."); }));
+}
+
+// =====================================================================
+// 모드 2: 문항 검토 클리닉
+// =====================================================================
+function clinic(idx = 0, score = { hit: 0, total: 0 }) {
+  if (idx >= CLINIC.length) {
+    $app.innerHTML = `<div class="card" style="text-align:center"><span class="tag">문항 검토 클리닉</span><h2 style="margin-top:10px">연습을 마쳤습니다</h2>
+      <div class="stat">${score.hit} / ${score.total}</div><p class="muted">찾아야 할 문제 유형 중 정확히 진단한 수</p>
+      <div class="row" style="justify-content:center;margin-top:12px"><button class="btn teal" id="again">다시 하기</button><button class="btn ghost" id="toHome">처음으로</button></div></div>`;
+    document.getElementById("again").onclick = () => clinic(0, { hit: 0, total: 0 });
+    document.getElementById("toHome").onclick = () => { location.hash = ""; };
+    return;
+  }
+  const c = CLINIC[idx];
+  $app.innerHTML = `
+  <div class="card"><div class="row space"><span class="tag">문항 검토 클리닉 · ${idx + 1} / ${CLINIC.length}</span><span class="note">진단 점수 ${score.hit} / ${score.total}</span></div>
+    <div class="progress" style="margin-top:10px"><div style="width:${(idx / CLINIC.length) * 100}%"></div></div></div>
+  <div class="card"><h2>이 문항의 문제는 무엇일까요?</h2><div class="box item">${nl(c.item)}</div>
+    <p class="muted" style="margin:14px 0 4px">해당하는 문제 유형을 모두 고르세요.</p>
+    <div id="types">${Object.entries(TYPES).map(([k, v]) => `<label class="chk" data-k="${k}"><input type="checkbox" value="${k}"><span>${esc(v)}</span></label>`).join("")}</div>
+    <div class="row" style="margin-top:12px"><button class="btn orange" id="check">진단 확인</button></div>
+    <div id="result"></div></div>`;
+  document.getElementById("check").onclick = () => {
+    const chosen = [...document.querySelectorAll("#types input:checked")].map((i) => i.value);
+    if (!chosen.length) return toast("문제 유형을 하나 이상 골라 주세요.");
+    let hit = 0;
+    document.querySelectorAll("#types label").forEach((l) => {
+      const k = l.dataset.k, inAns = c.ans.includes(k), picked = chosen.includes(k);
+      l.querySelector("input").disabled = true;
+      if (inAns && picked) { l.classList.add("ok"); hit++; } else if (inAns) l.classList.add("miss"); else if (picked) l.classList.add("wrong");
+    });
+    const wrong = chosen.filter((k) => !c.ans.includes(k)).length;
+    const gained = Math.max(0, hit - wrong);
+    score.hit += gained; score.total += c.ans.length;
+    document.getElementById("check").remove();
+    document.getElementById("result").innerHTML = `
+      <div class="reveal" style="margin-top:14px"><b>${hit === c.ans.length && !wrong ? "정확하게 진단했습니다." : "정답 유형을 확인해 보세요."}</b><br>
+        <span class="note">초록: 맞게 고른 유형 · 주황: 놓친 유형 · 빨강: 해당하지 않는 유형</span><br><br>${esc(c.why)}</div>
+      <p class="muted" style="margin:14px 0 6px">수정 예시</p><div class="box item" style="background:var(--tealL)">${nl(c.fix)}</div>
+      <div class="row" style="margin-top:12px"><button class="btn teal" id="next">다음 문항</button></div>`;
+    document.getElementById("next").onclick = () => clinic(idx + 1, score);
+  };
+}
+
+// =====================================================================
+// 모드 3: 기준 문장 다듬기
+// =====================================================================
+function highlightVague(text) {
+  let h = esc(text); const found = [];
+  VAGUE.forEach((w) => { const ww = w.trim(); if (!ww) return; if (text.includes(ww)) { found.push(ww); h = h.split(esc(ww)).join(`<mark class="v">${esc(ww)}</mark>`); } });
+  return { h, found };
+}
+function polish(idx = 0) {
+  if (idx >= POLISH.length) {
+    $app.innerHTML = `<div class="card" style="text-align:center"><span class="tag">기준 문장 다듬기</span><h2 style="margin-top:10px">연습을 마쳤습니다</h2>
+      <p class="muted">내 문항의 채점기준표에서도 모호한 표현을 찾아 같은 방법으로 바꾸어 보세요.</p>
+      <div class="row" style="justify-content:center;margin-top:12px"><button class="btn teal" id="again">다시 하기</button><button class="btn ghost" id="toHome">처음으로</button></div></div>`;
+    document.getElementById("again").onclick = () => polish(0);
+    document.getElementById("toHome").onclick = () => { location.hash = ""; };
+    return;
+  }
+  const p = POLISH[idx]; const saved = (store("sl_polish") || {})[idx] || "";
+  const v = highlightVague(p.vague);
+  $app.innerHTML = `
+  <div class="card"><div class="row space"><span class="tag">기준 문장 다듬기 · ${idx + 1} / ${POLISH.length}</span></div>
+    <div class="progress" style="margin-top:10px"><div style="width:${(idx / POLISH.length) * 100}%"></div></div></div>
+  <div class="card"><p class="muted" style="margin:0">상황: ${esc(p.ctx)}</p>
+    <h2 style="margin-top:8px">이 기준 문장을 답안에서 확인할 수 있는 문장으로 바꾸어 보세요</h2>
+    <div class="box item">${v.h}</div>
+    <p class="flagline">모호한 표현: ${v.found.length ? v.found.map((w) => `<mark class="v">${esc(w)}</mark>`).join(" ") : "없음"}</p>
+    <textarea id="mine" placeholder="예: 제시된 자료에서 ○○를 ○가지 찾아 ○○와 연결하여 서술함">${esc(saved)}</textarea>
+    <p class="flagline" id="live"></p>
+    <div class="row" style="margin-top:8px"><button class="btn orange" id="cmp">모범 수정안과 비교</button></div>
+    <div id="res"></div></div>`;
+  const ta = document.getElementById("mine"), live = document.getElementById("live");
+  const upd = () => {
+    const f = highlightVague(ta.value).found;
+    live.innerHTML = ta.value.trim() ? (f.length ? `<span style="color:var(--red)">아직 남아 있는 모호한 표현: ${f.map((w) => `<mark class="v">${esc(w)}</mark>`).join(" ")}</span>` : `<span style="color:var(--green)">모호한 표현이 없습니다.</span>`) : "";
+    const all = store("sl_polish") || {}; all[idx] = ta.value; store("sl_polish", all);
+  };
+  ta.oninput = upd; upd();
+  document.getElementById("cmp").onclick = () => {
+    if (!ta.value.trim()) return toast("먼저 수정한 문장을 써 주세요.");
+    document.getElementById("cmp").remove();
+    document.getElementById("res").innerHTML = `
+      <div class="two" style="margin-top:14px">
+        <div><p class="muted" style="margin:0 0 6px">내가 쓴 문장</p><div class="box">${highlightVague(ta.value).h}</div></div>
+        <div><p class="muted" style="margin:0 0 6px">모범 수정안</p><div class="box" style="background:var(--tealL)">${esc(p.model)}</div></div></div>
+      ${p.tip ? `<div class="reveal">${esc(p.tip)}</div>` : ""}
+      <p class="muted" style="margin:14px 0 4px">스스로 점검해 보세요.</p>
+      ${["답안에서 손가락으로 짚을 수 있는 행동(찾음, 연결함, 포함함 등)으로 썼는가?", "‘타당, 적절, 잘, 충실’ 같은 모호한 표현이 남아 있지 않은가?", "필요한 근거나 요소의 개수를 밝혔는가?", "글씨·분량이 아니라 평가하려는 내용을 기준으로 삼았는가?"].map((q) => `<label class="chk"><input type="checkbox"><span>${q}</span></label>`).join("")}
+      <div class="row" style="margin-top:12px"><button class="btn teal" id="next">다음 문장</button></div>`;
+    document.getElementById("next").onclick = () => polish(idx + 1);
+  };
+}
+
+// =====================================================================
+// 라우터
+// =====================================================================
+async function route() {
+  cleanup();
+  const h = location.hash.replace(/^#/, "");
+  const [m, arg] = h.split("/");
+  if (["room", "host", "play"].includes(m)) {
+    $app.innerHTML = `<div class="card">연결 중…</div>`;
+    await fbReady;
+    if (!needDb()) return;
+  }
+  if (m === "room") roomEntry();
+  else if (m === "host" && arg) hostView(arg);
+  else if (m === "play" && arg) playView(arg);
+  else if (m === "clinic") clinic();
+  else if (m === "polish") polish();
+  else home();
+  window.scrollTo(0, 0);
+}
+route();
+</script>
+</body>
+</html>
