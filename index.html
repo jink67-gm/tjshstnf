@@ -745,7 +745,11 @@ function playView(code) {
       const nextIdx = set.answers.findIndex((x, i) => i > idx && mine[i] === undefined);
       const firstMissing = set.answers.findIndex((x, i) => mine[i] === undefined);
       done = firstMissing === -1;
-      try { await save(); } catch (e) { console.error(e); toast("저장에 실패했습니다. 다시 눌러 주세요."); return; }
+      try { await save(); } catch (e) {
+        console.error(e); delete mine[idx]; done = false;
+        toast(e && e.code === "permission-denied" ? "저장 권한이 없습니다. Firestore 규칙을 확인해 주세요." : "저장에 실패했습니다. 다시 눌러 주세요.");
+        return;
+      }
       if (done) { render(); window.scrollTo(0, 0); }
       else openAnswer(nextIdx !== -1 ? nextIdx : firstMissing);
     };
