@@ -176,6 +176,10 @@ details.more li{margin:4px 0}
 details.card>summary{font-size:16px;color:var(--ink)}
 
 /* polish */
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.pside{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow:auto;margin-bottom:0}
+@media(max-width:900px){.pgrid{grid-template-columns:1fr}.pside{position:static;max-height:none;margin-bottom:16px}}
+.sec{font-size:22px;font-weight:800;letter-spacing:-.4px;margin:0 0 12px;color:var(--ink)}
 mark.v{background:#FFD5BC;color:inherit;border-radius:4px;padding:0 2px}
 .keys{display:flex;flex-wrap:wrap;gap:8px}
 .keys span{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;padding:5px 12px;border-radius:999px;border:1.5px solid var(--line2);background:#fff;color:var(--muted);font-weight:500;transition:.15s}
@@ -331,7 +335,7 @@ const SETS = [
 ];
 
 // =====================================================================
-// 데이터 2: 문항 검토 클리닉 (사회과 문항, 정답 1개, 보기 4개)
+// 데이터 2: 문항 검토하기 (사회과 문항, 정답 1개, 보기 4개)
 // =====================================================================
 const TYPES = {
   A: "단순 기억·재생 수준의 사고만 요구함",
@@ -342,7 +346,11 @@ const TYPES = {
   G: "학생 수준에 맞지 않는 어휘를 사용함",
   H: "제시 자료를 읽지 않아도 답할 수 있음",
   I: "제시문을 그대로 옮겨 써도 답이 됨",
-  J: "평가요소가 요구하는 행동과 문항이 어긋남"
+  J: "평가요소가 요구하는 행동과 문항이 어긋남",
+  K: "제시 자료가 부족하거나 잘못되어 답을 쓸 수 없음",
+  M: "배점에 비해 요구하는 과제가 지나치게 많음",
+  N: "서로 관련 없는 내용을 한 문항에 묶어 물음",
+  P: "학생 개인이나 가정의 사적인 정보를 드러내게 함"
 };
 const CLINIC = [
   { subj: "사회", item: "(문) 지방 자치 단체의 뜻을 쓰시오.", ans: "A", opts: ["A", "C", "D", "H"],
@@ -380,25 +388,56 @@ const CLINIC = [
     fix: "(문) 기사에서 주민들이 참여한 방법을 한 가지 찾고, 그 방법이 소각장 위치를 정하는 데 어떤 도움이 되었는지 자신의 말로 쓰시오.\n<조건> 참여 방법을 쓸 때, 기사의 문장을 그대로 옮겨 쓰지 않아야 함" },
   { subj: "사회", item: "[평가요소] 지도의 축척을 활용하여 실제 거리를 구하고, 그 과정을 설명하기\n[자료: 학교 주변 지도(방위표, 축척 표시)]\n(문) 지도에서 우체국은 학교의 어느 방향에 있는지 쓰시오.", ans: "J", opts: ["J", "C", "E", "G"],
     why: "평가요소는 ‘축척으로 실제 거리를 구하고 과정을 설명하기’인데, 문항은 방위만 묻습니다. 이 문항으로는 평가하려던 능력을 확인할 수 없습니다.",
-    fix: "(문) 지도의 축척을 활용하여 학교에서 우체국까지의 실제 거리를 구하고, 어떻게 구했는지 그 과정을 쓰시오." }
+    fix: "(문) 지도의 축척을 활용하여 학교에서 우체국까지의 실제 거리를 구하고, 어떻게 구했는지 그 과정을 쓰시오." },
+  { subj: "사회", item: "[자료: 방위표가 없는 우리 고장 지도]\n(문) 지도를 보고 시청이 학교의 어느 방향에 있는지 쓰고, 그렇게 판단한 근거를 쓰시오.", ans: "K", opts: ["K", "C", "E", "G"],
+    why: "지도에 방위표가 없어 방향을 판단할 근거가 없습니다. 학생은 답을 쓸 수 없거나, ‘위쪽이 북쪽’이라는 짐작에 기대어 답하게 됩니다.",
+    fix: "[자료: 방위표가 있는 우리 고장 지도]\n(문) 지도의 방위표를 활용하여 시청이 학교의 어느 방향에 있는지 쓰고, 그렇게 판단한 근거를 쓰시오." },
+  { subj: "사회", item: "[자료: 2020년 우리나라의 연령별 인구 그래프]\n(문) 자료를 보고 우리나라 인구가 시간이 흐르면서 어떻게 변해 왔는지 쓰시오.", ans: "K", opts: ["K", "C", "D", "G"],
+    why: "한 해의 자료만으로는 시간에 따른 변화를 알 수 없습니다. 질문이 요구하는 내용을 자료에서 찾을 수 없습니다.",
+    fix: "[자료: 1970년, 1995년, 2020년의 연령별 인구 그래프]\n(문) 세 그래프를 비교하여 우리나라 인구 구성이 어떻게 변해 왔는지 두 가지 쓰시오." },
+  { subj: "사회", item: "(문) 조선 후기에 나타난 사회 변화의 모습을 세 가지 쓰고, 각각의 원인과 결과, 오늘날 우리에게 주는 교훈을 쓰시오. (2점)", ans: "M", opts: ["M", "C", "E", "G"],
+    why: "변화 세 가지마다 원인·결과·교훈까지 9가지가 넘는 내용을 써야 하는데 배점은 2점입니다. 요소별로 점수를 나눌 수 없어 채점기준을 세우기 어렵고, 학생에게도 부담이 지나칩니다.",
+    fix: "(문) <자료>를 보고 조선 후기에 나타난 사회 변화의 모습을 한 가지 쓰고, 그 변화가 일어난 까닭을 쓰시오. (2점)" },
+  { subj: "사회", item: "(문) 우리나라의 기후 특징을 한 가지 쓰고, 지방 자치 단체가 하는 일을 두 가지 쓰시오.", ans: "N", opts: ["N", "C", "E", "G"],
+    why: "기후와 지방 자치는 서로 관련 없는 내용입니다. 한 문항에 묶으면 무엇을 평가하는 문항인지 흐려지고, 한쪽만 아는 학생의 점수를 해석하기 어렵습니다.",
+    fix: "두 문항으로 나눕니다.\n(문 1) <자료>의 월별 기온 그래프를 보고 우리나라 기후의 특징을 한 가지 쓰시오.\n(문 2) <자료>의 시청 누리집 화면을 보고 지방 자치 단체가 하는 일을 두 가지 찾아 쓰시오." },
+  { subj: "사회", item: "(문) 우리 가족의 한 달 수입과 지출 내역을 조사하여 쓰고, 우리 가족이 합리적으로 소비하고 있는지 평가하시오.", ans: "P", opts: ["P", "C", "E", "G"],
+    why: "가정의 수입과 지출은 사적인 정보입니다. 학생과 가족에게 부담을 주고, 가정 형편이 그대로 드러날 수 있습니다.",
+    fix: "[자료: 가상의 ○○네 가족 한 달 지출표]\n(문) <자료>를 보고 ○○네 가족의 지출 중 합리적이지 않다고 생각하는 부분을 한 가지 찾고, 그렇게 판단한 까닭을 쓰시오." },
+  { subj: "사회", item: "(문) 조선 시대의 신분 제도에 대해 서술하시오.", ans: "B", opts: ["B", "C", "E", "G"],
+    why: "신분의 종류, 신분에 따른 생활, 제도의 문제점 중 무엇을 써야 하는지 정해져 있지 않습니다. 답안이 제각각이 되어 채점 요소를 정할 수 없습니다.",
+    fix: "[자료: 조선 시대 양반과 상민의 생활 모습 그림]\n(문) <자료>를 비교하여 신분에 따라 달랐던 생활 모습을 두 가지 쓰시오." },
+  { subj: "사회", item: "(문) 학교 앞 도로를 ‘차 없는 거리’로 만들어야 하는 까닭을 두 가지 쓰시오.", ans: "C", opts: ["C", "E", "G", "H"],
+    why: "찬성하는 까닭만 쓰게 합니다. 주민·상인의 불편처럼 반대 의견도 있는 주제이므로, 학생이 입장을 정하고 근거의 타당성으로 평가받게 해야 합니다.",
+    fix: "(문) 학교 앞 도로를 ‘차 없는 거리’로 만드는 것에 대한 찬성 또는 반대 입장을 밝히고, 그 까닭을 두 가지 쓰시오." },
+  { subj: "사회", item: "(문) 기온이 높고 비가 많이 내리는 남부 지방 여름 기후의 특징을 쓰시오.", ans: "E", opts: ["E", "C", "D", "H"],
+    why: "‘기온이 높고 비가 많이 내리는’이라는 질문 속 표현을 그대로 옮기면 정답이 됩니다.",
+    fix: "[자료: 서울과 제주의 월별 기온·강수량 그래프]\n(문) 두 그래프를 비교하여 서울과 제주의 기후 차이를 두 가지 쓰시오." },
+  { subj: "사회", item: "(문) 정부가 시장에 개입하여 독과점을 규제하는 정책의 경제적 효율성을 평가하시오.", ans: "G", opts: ["G", "C", "E", "H"],
+    why: "‘개입’, ‘독과점’, ‘경제적 효율성’은 초등학생이 다루기 어려운 표현입니다. 사회과 이해보다 어휘 이해력이 함께 측정됩니다.",
+    fix: "(문) 한 회사가 어떤 물건을 혼자 만들어 판다면 소비자에게 어떤 어려움이 생길 수 있는지 한 가지 쓰고, 정부가 이를 막아야 하는 까닭을 쓰시오." },
+  { subj: "사회", item: "[자료: 세종 대왕의 업적(훈민정음 창제, 측우기 제작 등)을 정리한 글]\n(문) 세종 대왕의 업적을 두 가지 찾아 쓰시오.", ans: "I", opts: ["I", "C", "G", "J"],
+    why: "글에 나온 업적을 그대로 옮겨 쓰면 답이 되어, 업적의 의미를 이해했는지 확인할 수 없습니다.",
+    fix: "(문) 글에서 세종 대왕의 업적을 두 가지 찾고, 각 업적이 백성의 생활에 어떤 도움이 되었는지 자신의 말로 쓰시오." },
+  { subj: "사회", item: "[평가요소] 우리나라와 이웃 나라의 교류 모습을 비교하여 공통점과 차이점 설명하기\n(문) 우리나라와 교류가 활발한 나라를 세 가지 쓰시오.", ans: "J", opts: ["J", "C", "E", "G"],
+    why: "평가요소는 ‘교류 모습을 비교하여 공통점과 차이점 설명하기’인데, 문항은 나라 이름만 묻습니다.",
+    fix: "[자료: 우리나라와 중국, 일본의 교류 사례]\n(문) <자료>를 보고 우리나라가 두 나라와 교류하는 모습의 공통점과 차이점을 한 가지씩 쓰시오." }
 ];
 
 // =====================================================================
-// 데이터 3: 기준 문장 다듬기 (연수 예시와 다른 사회과 연습 문항)
+// 데이터 3: 채점기준표 다듬기 (연수 예시와 다른 사회과 연습 문항)
 // =====================================================================
 const VAGUE = ["타당", "적절", "논리적", "충실", "성실", "우수", "미흡", "다소", "단편적", "대체로", "충분", "꼼꼼", "적극적", "훌륭", "체계적", "자세히", "풍부", "잘 "];
 const P_JUMIN = {
   title: "사회 · 지역 문제 해결과 주민 참여",
-  achieve: "평가요소(연습용): 지역 문제를 해결하기 위한 주민 참여 방법을 찾고, 그 역할 설명하기",
   question: "<자료>를 읽고, 주민들이 지역 문제를 해결하기 위해 참여한 방법을 두 가지 찾아 쓰고, 각 방법이 문제 해결에 어떤 도움이 되었는지 쓰시오. (4점)",
-  context: "[자료] ○○초등학교 앞 어린이 보호 구역의 불법 주차 문제\n① 학부모와 주민들이 한 달 동안 불법 주차 차량을 조사하여 구청에 알렸다.\n② 주민 회의를 열어 등하교 시간에는 학교 앞에 차를 세우지 않기로 약속하였다.\n③ 구청 누리집에 단속 카메라 설치를 건의하는 글을 올렸다.\n④ 석 달 뒤 단속 카메라가 설치되었고, 학교 앞 불법 주차가 크게 줄었다."
+  context: "○○초등학교 앞 어린이 보호 구역의 불법 주차 문제\n① 학부모와 주민들이 한 달 동안 불법 주차 차량을 조사하여 구청에 알렸다.\n② 주민 회의를 열어 등하교 시간에는 학교 앞에 차를 세우지 않기로 약속하였다.\n③ 구청 누리집에 단속 카메라 설치를 건의하는 글을 올렸다.\n④ 석 달 뒤 단속 카메라가 설치되었고, 학교 앞 불법 주차가 크게 줄었다."
 };
-const R_JUMIN = [[4, "주민 참여 방법과 그 도움을 정확하고 자세히 쓴 경우"], [3, "주민 참여 방법과 그 도움을 대체로 바르게 쓴 경우"], [2, "주민 참여 방법은 썼으나, 도움에 대한 설명이 미흡한 경우"], [1, "주민 참여 방법을 일부만 쓴 경우"], [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]];
+const R_JUMIN = [[4, "주민 참여 방법과 그 도움을 정확하고 자세히 쓴 경우"], [3, "주민 참여 방법과 그 도움을 대체로 바르게 쓴 경우"], [2, "주민 참여 방법 2가지를 찾았으나, 도움은 쓰지 않은 경우"], [1, "주민 참여 방법을 1가지만 찾은 경우"], [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]];
 const P_INGWON = {
   title: "사회 · 생활 속 인권 보장",
-  achieve: "평가요소(연습용): 생활 속 사례에서 인권이 보장되지 않은 경우를 찾고, 보장되어야 할 권리 설명하기",
   question: "<사례> ㉠~㉢ 중 인권이 보장되지 않은 사례를 두 가지 고르고, 각 사례에서 어떤 권리가 보장되지 않았는지 그 까닭과 함께 쓰시오. (3점)",
-  context: "<사례>\n㉠ 휠체어를 타는 민수는 강당에 경사로가 없어 학예회 공연에 참여하지 못하였다.\n㉡ 우리 반은 학급 규칙을 정할 때 모든 학생이 의견을 내고 투표로 결정하였다.\n㉢ 지아는 피부색이 다르다는 이유로 친구들의 놀이에 끼지 못하였다."
+  context: "㉠ 휠체어를 타는 민수는 강당에 경사로가 없어 학예회 공연에 참여하지 못하였다.\n㉡ 우리 반은 학급 규칙을 정할 때 모든 학생이 의견을 내고 투표로 결정하였다.\n㉢ 지아는 피부색이 다르다는 이유로 친구들의 놀이에 끼지 못하였다."
 };
 const R_INGWON = [[3, "인권이 보장되지 않은 사례를 고르고, 권리와 까닭을 타당하게 쓴 경우"], [2, "사례를 골랐으나, 권리나 까닭에 대한 설명이 다소 부족한 경우"], [1, "사례만 고른 경우"], [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]];
 const POLISH = [
@@ -406,21 +445,21 @@ const POLISH = [
     problem: "‘정확하고 자세히’는 무엇을 몇 가지 써야 하는지 알려 주지 않습니다. 문항이 요구한 ‘참여 방법 두 가지’와 ‘각 방법의 도움’이 기준에 드러나지 않아, 길게 쓴 답안이 높은 점수를 받기 쉽습니다.",
     sample: "주민들이 불법 주차 차량을 조사해서 구청에 알렸습니다. 그래서 구청이 문제를 알게 되었습니다. 또 주민 회의를 열어서 차를 세우지 않기로 약속했습니다.",
     sampleQ: "이 답안은 ‘정확하고 자세히 쓴 경우(4점)’일까요?",
-    sampleWhy: "참여 방법 두 가지는 찾았지만, 도움은 첫 번째 방법에만 썼습니다. ‘자세히’를 어떻게 보느냐에 따라 4점과 3점으로 갈립니다.",
+    sampleWhy: "참여 방법 두 가지는 찾았지만, 도움은 첫 번째 방법(조사해서 알림)에만 썼고 두 번째 방법(주민 회의 약속)의 도움은 쓰지 않았습니다. ‘자세히’를 어떻게 보느냐에 따라 4점과 3점으로 갈립니다.",
     keys: [{ label: "참여 방법의 개수(2가지)", re: "2\\s*가지|두\\s*가지|2\\s*개|두\\s*개" }, { label: "<자료>에서 찾기", re: "자료" }, { label: "각 방법마다 도움을 연결", re: "각|모두|연결" }],
     model: "<자료>에서 주민 참여 방법 2가지를 찾고, 각 방법이 문제 해결에 준 도움을 모두 바르게 연결하여 쓴 경우" },
   { set: P_JUMIN, rubric: R_JUMIN, target: 1,
-    problem: "‘대체로 바르게’는 4점과 무엇이 다른지 알려 주지 않습니다. 무엇을 몇 가지 갖추면 3점인지 정해져 있지 않아 4점·2점과의 경계가 흐립니다.",
+    problem: "‘대체로 바르게’는 4점과 무엇이 다른지 알려 주지 않습니다. 무엇을 몇 가지 갖추면 3점인지 정해져 있지 않습니다.",
     sample: "학부모와 주민들이 불법 주차 차량을 조사해 구청에 알려서, 구청이 문제를 정확히 알게 되었습니다. 그리고 구청 누리집에 건의하는 글을 올렸습니다.",
-    sampleQ: "이 답안은 3점일까요, 2점일까요?",
-    sampleWhy: "방법 두 가지 중 하나만 도움과 연결했습니다. ‘대체로’와 ‘미흡’의 경계가 정해져 있지 않아 3점과 2점으로 갈립니다.",
+    sampleQ: "이 답안은 ‘대체로 바르게 쓴 경우(3점)’일까요?",
+    sampleWhy: "방법 두 가지를 찾았고, 그중 첫 번째 방법만 도움과 연결했습니다. ‘대체로’가 어디까지인지 정해져 있지 않아 4점과 3점 사이에서 판단이 갈립니다.",
     keys: [{ label: "참여 방법 2가지를 찾음", re: "2\\s*가지|두\\s*가지|2\\s*개|두\\s*개" }, { label: "1가지 방법만 도움과 연결함", re: "1\\s*가지|한\\s*가지|1\\s*개|하나" }],
     model: "<자료>에서 주민 참여 방법 2가지를 찾았으나, 그중 1가지 방법에 대해서만 문제 해결에 준 도움을 바르게 연결하여 쓴 경우" },
   { set: P_INGWON, rubric: R_INGWON, target: 0,
     problem: "‘타당하게’가 무엇을 갖추어야 하는지 정해져 있지 않습니다. 문항이 요구한 ‘사례 두 가지’, ‘보장되지 않은 권리’, ‘까닭’이 기준에 드러나야 합니다.",
     sample: "㉠과 ㉢입니다. ㉠은 민수가 학예회에 참여하지 못해서 속상했을 것입니다. ㉢은 차별을 받았기 때문입니다.",
     sampleQ: "이 답안은 ‘타당하게 쓴 경우(3점)’일까요?",
-    sampleWhy: "사례 두 가지는 바르게 골랐지만, ㉠에는 보장되지 않은 권리가 나타나 있지 않습니다. ㉢의 ‘차별’을 권리에 대한 설명으로 인정할지도 채점자마다 다르게 판단합니다.",
+    sampleWhy: "사례 두 가지는 바르게 골랐지만, ㉠은 민수의 기분만 썼을 뿐 보장되지 않은 권리를 쓰지 않았습니다. ㉢의 ‘차별’을 권리에 대한 설명으로 인정할지도 채점자마다 다르게 판단합니다.",
     keys: [{ label: "사례 2가지(㉠, ㉢)", re: "2\\s*가지|두\\s*가지|㉠|㉢" }, { label: "보장되지 않은 권리", re: "권리" }, { label: "까닭과 연결", re: "까닭|이유|연결" }],
     model: "인권이 보장되지 않은 사례 2가지(㉠, ㉢)를 바르게 고르고, 각 사례에서 보장되지 않은 권리를 그 까닭과 연결하여 모두 쓴 경우" },
   { set: P_INGWON, rubric: R_INGWON, target: 1,
@@ -429,38 +468,24 @@ const POLISH = [
     sampleQ: "이 답안은 2점일까요, 1점일까요?",
     sampleWhy: "㉠은 권리와 까닭을 모두 썼지만 ㉢은 사례만 골랐습니다. ‘다소 부족’의 범위가 정해져 있지 않아 2점과 1점으로 갈립니다.",
     keys: [{ label: "1가지 사례만 권리·까닭을 쓴 경우", re: "1\\s*가지|한\\s*가지|하나" }, { label: "2가지 사례의 권리만 쓴 경우", re: "2\\s*가지|두\\s*가지" }, { label: "까닭이 빠진 경우", re: "까닭|이유" }],
-    model: "인권이 보장되지 않은 사례 2가지를 골랐으나, 그중 1가지 사례에 대해서만 보장되지 않은 권리와 까닭을 쓴 경우 또는 2가지 사례의 권리만 쓰고 까닭은 쓰지 않은 경우" },
+    model: "인권이 보장되지 않은 사례 중 1가지에 대해서만 보장되지 않은 권리와 까닭을 바르게 쓴 경우, 또는 사례 2가지의 권리만 쓰고 까닭은 쓰지 않은 경우" },
   { set: { title: "사회 · 합리적인 선택",
-      achieve: "평가요소(연습용): 선택 기준을 세워 여러 대안을 비교하고 합리적으로 선택하기",
-      question: "<자료>를 보고 공기 청정기를 고를 때의 선택 기준을 두 가지 정하고, 그 기준에 따라 제품 한 가지를 골라 까닭과 함께 쓰시오. (4점)",
-      context: "[자료] 공기 청정기 비교표\n제품 가: 가격 30만 원 / 소음 작음 / 한 달 전기 요금 약 2천 원\n제품 나: 가격 20만 원 / 소음 큼 / 한 달 전기 요금 약 3천 원\n제품 다: 가격 25만 원 / 소음 보통 / 한 달 전기 요금 약 1천 원" },
-    rubric: [[4, "선택 기준을 정하고, 제품을 골라 그 까닭을 충실하게 쓴 경우"], [2, "선택 기준과 제품을 썼으나, 까닭이 다소 미흡한 경우"], [1, "제품만 고른 경우"], [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]], target: 0,
-    problem: "‘충실하게’가 무엇을 갖추어야 하는지 알려 주지 않습니다. 이 문항이 요구한 ‘기준 두 가지’, ‘<자료>의 정보로 비교하기’, ‘기준과 고른 까닭의 연결’이 기준에 드러나지 않습니다.",
-    sample: "가격과 소음을 기준으로 정했습니다. 저는 제품 가를 고르겠습니다. 소음이 작아서 밤에도 켜 둘 수 있기 때문입니다.",
+      question: "우리 가족이 거실에 둘 공기 청정기를 사려고 합니다. 공기 청정기를 고를 때의 선택 기준을 두 가지 정하고, 각 기준을 정한 까닭을 쓰시오. (4점)", context: "" },
+    rubric: [[4, "선택 기준을 정하고, 그 까닭을 충실하게 쓴 경우"], [2, "선택 기준을 정했으나, 까닭이 다소 미흡한 경우"], [1, "선택 기준만 쓴 경우"], [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]], target: 0,
+    problem: "‘충실하게’가 무엇을 갖추어야 하는지 알려 주지 않습니다. 문항이 요구한 ‘기준 두 가지’와 ‘각 기준을 정한 까닭’이 기준에 드러나지 않습니다.",
+    sample: "가격과 소음을 기준으로 정하겠습니다. 소음이 크면 밤에 잠을 자기 어렵기 때문입니다.",
     sampleQ: "이 답안은 ‘충실하게 쓴 경우(4점)’일까요?",
-    sampleWhy: "기준 두 가지를 정했지만 까닭에는 소음만 썼고, 가장 비싼 제품을 고른 점은 가격 기준과 맞지 않습니다. ‘충실하게’로는 4점인지 2점인지 정할 수 없습니다.",
-    keys: [{ label: "선택 기준 2가지", re: "2\\s*가지|두\\s*가지|2\\s*개|두\\s*개" }, { label: "<자료>의 정보로 비교", re: "자료|비교" }, { label: "기준과 까닭의 연결", re: "연결|따라|맞" }],
-    model: "선택 기준 2가지를 정하고, <자료>의 정보를 두 기준에 따라 비교하여 고른 제품과 그 까닭을 연결하여 쓴 경우" },
-  { set: { title: "사회 · 지구촌 환경 문제",
-      achieve: "평가요소(연습용): 지구촌 환경 문제의 해결 방안을 개인과 국가 수준에서 제안하기",
-      question: "<자료>를 보고 바다의 플라스틱 쓰레기 문제를 해결하기 위해 개인과 국가가 할 수 있는 노력을 각각 한 가지씩 쓰고, 각 노력이 필요한 근거를 <자료>에서 찾아 쓰시오. (4점)",
-      context: "[자료]\n• 해마다 많은 양의 플라스틱 쓰레기가 바다로 흘러들어 바다 생물이 피해를 입고 있다.\n• 바다 쓰레기의 상당수는 일회용 컵, 빨대, 비닐봉지 같은 생활 쓰레기이다.\n• 여러 나라가 일회용 플라스틱 사용을 줄이는 법을 만들고 있다." },
-    rubric: [[3, "개인과 국가의 노력을 각각 쓰고, 근거를 <자료>에서 찾아 쓴 경우"], [2, "개인과 국가의 노력 중 한 가지만 근거와 함께 쓴 경우"], [1, "노력만 쓰고 근거를 쓰지 않은 경우"], ["+1", "(추가 점수) 글씨가 바르고 작성 분량이 충분한 경우"], [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]], target: 3,
-    problem: "글씨와 분량은 ‘해결 방안 제안하기’라는 평가요소와 관련이 없습니다. 이 칸 때문에 같은 내용의 답안도 글씨에 따라 점수가 달라집니다.",
-    sample: "개인은 일회용 컵 대신 텀블러를 쓸 수 있습니다. 바다 쓰레기 중 일회용 컵이 많기 때문입니다. 국가는 일회용 플라스틱을 줄이는 법을 만들 수 있습니다. 여러 나라가 이미 그런 법을 만들고 있기 때문입니다. (글씨가 작고 네 줄 분량)",
-    sampleQ: "이 답안은 3점일까요, 4점일까요?",
-    sampleWhy: "내용은 같아도 글씨·분량을 보는 눈에 따라 점수가 달라집니다. 평가하려는 내용과 관련 없는 요소가 점수를 좌우하게 됩니다.",
-    keys: [{ label: "평가요소(노력·근거)와 관련된 기준", re: "노력|근거|해결" }, { label: "노력과 근거의 연결", re: "연결|뒷받침|맞" }],
-    model: "(추가 점수) 제안한 두 노력이 모두 <자료>에서 찾은 근거와 맞게 연결되도록 쓴 경우 — 또는 글씨·분량 기준을 삭제하고 평가요소와 관련된 기준만 남김" },
+    sampleWhy: "선택 기준 두 가지(가격, 소음)는 정했지만, 까닭은 소음을 기준으로 정한 까닭만 썼고 가격을 기준으로 정한 까닭은 쓰지 않았습니다. ‘충실하게’로는 까닭이 하나 빠진 답안을 4점으로 볼지 2점으로 볼지 정할 수 없습니다.",
+    keys: [{ label: "선택 기준 2가지", re: "2\\s*가지|두\\s*가지|2\\s*개|두\\s*개" }, { label: "각 기준마다 까닭", re: "각|모두" }],
+    model: "선택 기준 2가지를 정하고, 각 기준을 정한 까닭을 모두 쓴 경우" },
   { set: { title: "사회 · 교통수단의 변화와 생활 모습",
-      achieve: "평가요소(연습용): 옛날과 오늘날의 교통수단을 비교하여 생활 모습의 변화 설명하기",
       question: "<자료>를 보고 옛날과 오늘날 교통수단의 달라진 점을 한 가지 쓰고, 그로 인해 사람들의 생활 모습이 어떻게 달라졌는지 쓰시오. (3점)",
-      context: "[자료]\n옛날: 가마, 나룻배, 말\n오늘날: 버스, 고속 열차, 비행기" },
-    rubric: [[3, "옛날과 오늘날의 교통수단을 잘 비교하여 생활 모습의 변화를 쓴 경우"], [2, "교통수단을 비교하였으나, 생활 모습의 변화에 대한 설명이 부족한 경우"], [1, "교통수단의 변화만 쓴 경우"], [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]], target: 2,
-    problem: "‘교통수단의 변화만 쓴 경우’는 있지만, 반대로 생활 모습의 변화만 쓴 답안을 어느 칸에 넣을지 정해져 있지 않습니다(포괄성 부족). 2점과 1점의 차이도 분명하지 않습니다.",
+      context: "옛날: 가마, 나룻배, 말\n오늘날: 버스, 고속 열차, 비행기" },
+    rubric: [[3, "옛날과 오늘날의 교통수단을 잘 비교하여 생활 모습의 변화를 쓴 경우"], [2, "교통수단의 달라진 점과 생활 모습의 변화를 모두 썼으나, 두 내용이 서로 연결되지 않은 경우"], [1, "교통수단의 변화만 쓴 경우"], [0, "무응답 또는 문항과 관련 없는 내용을 쓴 경우"]], target: 2,
+    problem: "‘교통수단의 변화만 쓴 경우’는 있지만, 반대로 생활 모습의 변화만 쓴 답안을 넣을 칸이 없습니다(포괄성 부족).",
     sample: "오늘날에는 먼 곳에 사는 친척 집에도 하루 만에 다녀올 수 있게 되었습니다.",
     sampleQ: "교통수단의 달라진 점 없이 생활 모습의 변화만 쓴 이 답안은 몇 점일까요?",
-    sampleWhy: "생활 모습의 변화는 바르게 썼지만 교통수단의 달라진 점은 쓰지 않았습니다. 기준표에 이 경우가 없어 2점·1점·0점으로 갈립니다.",
+    sampleWhy: "생활 모습의 변화는 바르게 썼지만 교통수단의 달라진 점은 쓰지 않았습니다. 2점은 두 내용을 모두 쓴 경우이므로 해당하지 않고, 1점은 교통수단의 변화만 쓴 경우라 이 답안을 넣을 칸이 없습니다. 채점자마다 1점과 0점으로 갈립니다.",
     keys: [{ label: "두 요소(교통수단의 달라진 점, 생활 모습의 변화)를 모두 밝힘", re: "^(?=[\\s\\S]*교통)(?=[\\s\\S]*생활)" }, { label: "그중 1가지만 쓴 경우", re: "1\\s*가지|한\\s*가지|하나|중" }],
     model: "교통수단의 달라진 점과 그로 인한 생활 모습의 변화 중 1가지만 바르게 쓴 경우" }
 ];
@@ -521,8 +546,8 @@ function home() {
   <h1>무엇을 연습할까요?</h1>
   <div class="tiles">
     <button class="tile o" data-go="room"><span class="tag o">연수 · 실시간</span><span class="ib">${ic("users")}</span><h3>같은 답안, 같은 점수?</h3><p>함께 채점하고 일치도 비교</p><span class="go">${ic("arrowR")}</span></button>
-    <button class="tile" data-go="clinic"><span class="tag">개인 연습</span><span class="ib">${ic("search")}</span><h3>문항 검토 클리닉</h3><p>문항 ${CLINIC.length}개 진단</p><span class="go">${ic("arrowR")}</span></button>
-    <button class="tile" data-go="polish"><span class="tag">개인 연습</span><span class="ib">${ic("pen")}</span><h3>기준 문장 다듬기</h3><p>채점 기준 ${POLISH.length}개 고쳐 쓰기</p><span class="go">${ic("arrowR")}</span></button>
+    <button class="tile" data-go="polish"><span class="tag">개인 연습</span><span class="ib">${ic("pen")}</span><h3>채점기준표 다듬기</h3><p>채점기준표 ${POLISH.length}개 고쳐 쓰기</p><span class="go">${ic("arrowR")}</span></button>
+    <button class="tile" data-go="clinic"><span class="tag">개인 연습</span><span class="ib">${ic("search")}</span><h3>문항 검토하기</h3><p>문항 ${CLINIC.length}개 진단</p><span class="go">${ic("arrowR")}</span></button>
   </div>`;
   $app.querySelectorAll("[data-go]").forEach((el) => (el.onclick = () => { location.hash = el.dataset.go; }));
 }
@@ -746,7 +771,7 @@ function playView(code) {
 }
 
 // =====================================================================
-// 모드 2: 문항 검토 클리닉 (문항·보기 무작위, 정답 1개)
+// 모드 2: 문항 검토하기 (문항·보기 무작위, 정답 1개)
 // =====================================================================
 function clinicStart() {
   const order = shuffle(CLINIC.map((c, i) => i)).map((i) => ({ i, opts: shuffle(CLINIC[i].opts) }));
@@ -756,7 +781,7 @@ function clinic(order, pos, correct) {
   const total = order.length;
   if (pos >= total) {
     $app.innerHTML = `<div class="narrow"><div class="card center" style="padding:40px 22px">
-      <div class="lab">문항 검토 클리닉</div><div class="big-num">${correct}<span class="muted" style="font-size:28px"> / ${total}</span></div>
+      <div class="lab">문항 검토하기</div><div class="big-num">${correct}<span class="muted" style="font-size:28px"> / ${total}</span></div>
       <div class="row mt20" style="justify-content:center"><button class="btn pri" id="again">${ic("refresh")}다시 하기</button><button class="btn line" id="toHome">${ic("home")}홈</button></div></div></div>`;
     $("again").onclick = clinicStart;
     $("toHome").onclick = () => { location.hash = ""; };
@@ -787,7 +812,7 @@ function clinic(order, pos, correct) {
 }
 
 // =====================================================================
-// 모드 3: 기준 문장 다듬기
+// 모드 3: 채점기준표 다듬기
 // =====================================================================
 function highlightVague(text) {
   let h = esc(text); const found = [];
@@ -805,37 +830,42 @@ function polish(idx = 0) {
     return;
   }
   const p = POLISH[idx]; const s = p.set; const tgt = p.rubric[p.target];
-  const saved = (store("sl_polish3") || {})[idx] || "";
-  $app.innerHTML = `<div class="narrow">
+  const saved = (store("sl_polish4") || {})[idx] || "";
+  $app.innerHTML = `
     <div class="stepbar"><button class="btn line sm icon" id="prevP" ${idx === 0 ? "disabled" : ""} aria-label="이전">${ic("arrowL")}</button><div class="bar"><i style="width:${((idx + 1) / total) * 100}%"></i></div><span class="cnt">${idx + 1} / ${total}</span><button class="btn line sm icon" id="skipP" aria-label="다음">${ic("arrowR")}</button></div>
-    <div class="card">
-      <span class="tag n">${esc(s.title)}</span>
-      <div class="box mt12">${nl(s.question)}</div>
-      ${s.context ? `<details class="more"><summary>제시 자료</summary><div class="box src mt8">${nl(s.context)}</div></details>` : ""}
-      <div class="lab mt20">채점기준표 초안</div>
-      ${rubricTable(p.rubric, p.target)}
-    </div>
-    <div class="card">
-      <div class="lab">학생 답안</div>
-      <div class="box white">${nl(p.sample)}</div>
-      <p style="margin:14px 0 0;font-weight:700">${esc(p.sampleQ)}</p>
-      <details class="more"><summary>판단이 갈리는 이유</summary><div class="call mt8">${esc(p.sampleWhy)}\n\n${esc(p.problem)}</div></details>
-    </div>
-    <div class="card">
-      <div class="lab">${esc(tgt[0])}점 칸 고쳐 쓰기</div>
-      <div class="box">${highlightVague(tgt[1]).h}</div>
-      <div class="keys mt12" id="keys">${p.keys.map((k, j) => `<span data-j="${j}">${ic("check")}${esc(k.label)}</span>`).join("")}</div>
-      <textarea id="mine" class="mt12" placeholder="예: <자료>에서 ○○를 ○가지 찾고, ○○와 연결하여 쓴 경우">${esc(saved)}</textarea>
-      <div class="flag" id="live"></div>
-      <div class="row end"><button class="btn acc" id="cmp">모범안과 비교</button></div>
-      <div id="res"></div>
-    </div></div>`;
+    <div class="pgrid">
+      <aside class="card pside">
+        <span class="tag n">${esc(s.title)}</span>
+        <div class="sec mt16">문항</div>
+        <div class="box">${nl(s.question)}</div>
+        ${s.context ? `<div class="box src mt8">${nl(s.context)}</div>` : ""}
+        <div class="sec mt20">채점기준표 초안</div>
+        ${rubricTable(p.rubric, p.target)}
+      </aside>
+      <div>
+        <div class="card">
+          <div class="sec">학생 답안</div>
+          <div class="box white">${nl(p.sample)}</div>
+          <p style="margin:14px 0 0;font-weight:700;font-size:16px">${esc(p.sampleQ)}</p>
+          <details class="more"><summary>판단이 갈리는 이유</summary><div class="call mt8">${esc(p.sampleWhy)}\n\n${esc(p.problem)}</div></details>
+        </div>
+        <div class="card">
+          <div class="sec">${esc(tgt[0])}점 칸 고쳐 쓰기</div>
+          <div class="box">${highlightVague(tgt[1]).h}</div>
+          <div class="keys mt12" id="keys">${p.keys.map((k, j) => `<span data-j="${j}">${ic("check")}${esc(k.label)}</span>`).join("")}</div>
+          <textarea id="mine" class="mt12" placeholder="예: <자료>에서 ○○를 ○가지 찾고, ○○와 연결하여 쓴 경우">${esc(saved)}</textarea>
+          <div class="flag" id="live"></div>
+          <div class="row end"><button class="btn acc" id="cmp">모범안과 비교</button></div>
+          <div id="res"></div>
+        </div>
+      </div>
+    </div>`;
   const ta = $("mine"), live = $("live");
   const upd = () => {
     const v = ta.value; const f = highlightVague(v).found;
     p.keys.forEach((k, j) => { document.querySelector(`#keys span[data-j="${j}"]`).classList.toggle("on", new RegExp(k.re).test(v)); });
     live.innerHTML = v.trim() ? (f.length ? `<span style="color:var(--red)">모호한 표현 ${f.map((w) => `<mark class="v">${esc(w)}</mark>`).join(" ")}</span>` : `<span style="color:var(--green)">모호한 표현 없음</span>`) : "";
-    const all = store("sl_polish3") || {}; all[idx] = v; store("sl_polish3", all);
+    const all = store("sl_polish4") || {}; all[idx] = v; store("sl_polish4", all);
   };
   ta.oninput = upd; upd();
   const go = (n) => { polish(n); window.scrollTo(0, 0); };
@@ -845,9 +875,8 @@ function polish(idx = 0) {
     if (!ta.value.trim()) { ta.focus(); return toast("고친 문장을 먼저 써 주세요."); }
     const hit = p.keys.filter((k) => new RegExp(k.re).test(ta.value)).length;
     $("res").innerHTML = `
-      <div class="two mt16">
-        <div><div class="lab">내 문장 · 요소 ${hit}/${p.keys.length}</div><div class="box">${highlightVague(ta.value).h}</div></div>
-        <div><div class="lab">모범 수정안</div><div class="box model">${esc(p.model)}</div></div></div>
+      <div class="sec mt20" style="font-size:18px">내 문장 · 요소 ${hit}/${p.keys.length}</div><div class="box">${highlightVague(ta.value).h}</div>
+      <div class="sec mt16" style="font-size:18px">모범 수정안</div><div class="box model">${esc(p.model)}</div>
       <div class="row end mt16"><button class="btn pri" id="next">${idx === total - 1 ? "마치기" : "다음"}${ic("arrowR")}</button></div>`;
     $("cmp").textContent = "다시 비교";
     $("next").onclick = () => go(idx + 1);
